@@ -13,9 +13,9 @@ def parse_expression(input_str):
 
 def parse_number(token):
     """Parses a number from the input token."""
-    if token.startswith('0x') or token.startswith('0X'):
+    if len(token) > 2 and token[0] == '0' and token[1] in ['x', 'X']:
         return parse_hex(token[2:])
-    elif token.startswith('0o') or token.startswith('0O'):
+    elif len(token) > 2 and token[0] == '0' and token[1] in ['o', 'O']:
         return parse_oct(token[2:])
     else:
         return parse_dec(token)
@@ -24,20 +24,10 @@ def parse_hex(token):
     """Parses a hexadecimal integer from the input token."""
     value = 0
     for c in token:
-        if c.isdigit():
+        if '0' <= c <= '9':
             value = value * 16 + int(c)
-        elif c in ['a', 'A']:
-            value = value * 16 + 10
-        elif c in ['b', 'B']:
-            value = value * 16 + 11
-        elif c in ['c', 'C']:
-            value = value * 16 + 12
-        elif c in ['d', 'D']:
-            value = value * 16 + 13
-        elif c in ['e', 'E']:
-            value = value * 16 + 14
-        elif c in ['f', 'F']:
-            value = value * 16 + 15
+        elif 'a' <= c <= 'f' or 'A' <= c <= 'F':
+            value = value * 16 + ord(c) - ord('a') + 10
         else:
             return None
     return value
@@ -46,7 +36,7 @@ def parse_oct(token):
     """Parses an octal integer from the input token."""
     value = 0
     for c in token:
-        if c in ['0', '1', '2', '3', '4', '5', '6', '7']:
+        if '0' <= c <= '7':
             value = value * 8 + int(c)
         else:
             return None
@@ -54,8 +44,9 @@ def parse_oct(token):
 
 def parse_dec(token):
     """Parses a decimal integer from the input token."""
-    if not token.isdigit():
-        return None
+    for c in token:
+        if not '0' <= c <= '9':
+            return None
     return int(token)
 
 while True:
