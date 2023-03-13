@@ -11,15 +11,19 @@ def parse_expression(input_str):
         return None
     return operand1, operand2, tokens[1]
 
+
 def parse_number(token):
     """Parses a number from the input token."""
     if len(token) > 2 and token[0] == '0' and token[1] in ['x', 'X']:
         return parse_hex(token[2:])
     elif len(token) > 2 and token[0] == '0' and token[1] in ['o', 'O']:
         return parse_oct(token[2:])
+    elif len(token) > 2 and token[0] == '0' and token[1] in ['b', 'B']:
+        return parse_bin(token[2:])
     else:
         return parse_dec(token)
 
+    
 def parse_hex(token):
     """Parses a hexadecimal integer from the input token."""
     value = 0
@@ -32,6 +36,7 @@ def parse_hex(token):
             return None
     return value
 
+
 def parse_oct(token):
     """Parses an octal integer from the input token."""
     value = 0
@@ -42,6 +47,21 @@ def parse_oct(token):
             return None
     return value
 
+
+def parse_bin(token):
+    value = 0
+    power = -1
+    for c in token[::-1]:
+        power += 1
+        if c == "0":
+            pass
+        elif c == "1":
+            value += 2**power * 1
+        else:
+            return None
+    return value
+
+
 def parse_dec(token):
     """Parses a decimal integer from the input token."""
     for c in token:
@@ -49,34 +69,43 @@ def parse_dec(token):
             return None
     return int(token)
 
-while True:
-    input_str = input('Enter an expression (e.g. 2 + 3): ').strip()
 
-    if len(input_str) > 20:
-        print('Input too long. Please enter an expression with at most 20 characters.')
-        continue
+def main():
+    """Main function"""
+    while True:
+        input_str = input('Enter an expression (e.g. 2 + 3): ').strip()
 
-    expr = parse_expression(input_str)
-    if expr is None:
-        print('Invalid input. Please enter a valid expression (e.g. 2 + 3).')
-        continue
-
-    operand1, operand2, operator = expr
-    if operator == '+':
-        result = operand1 + operand2
-    elif operator == '-':
-        result = operand1 - operand2
-    elif operator == '*':
-        result = operand1 * operand2
-    elif operator == '/':
-        if operand2 == 0:
-            print('Error: division by zero.')
+        if len(input_str) > 20:
+            print('Input too long. Please enter an expression with at most 20 characters.')
             continue
-        result = operand1 / operand2
-    else:
-        result = None
 
-    if result is not None:
-        print('Result:', result)
-    else:
-        print('Unknown operator.')
+        expr = parse_expression(input_str)
+        if expr is None:
+            print('Invalid input. Please enter a valid expression (e.g. 2 + 3).')
+            continue
+
+        operand1, operand2, operator = expr
+        if operator == '+':
+            result = operand1 + operand2
+        elif operator == '-':
+            result = operand1 - operand2
+        elif operator == '*':
+            result = operand1 * operand2
+        elif operator == '/':
+            if operand2 == 0:
+                print('Error: division by zero.')
+                continue
+            result = operand1 / operand2
+        else:
+            result = None
+
+        if result is not None:
+            print('Result:', result)
+        else:
+            print('Unknown operator.')
+
+
+"""Runs main() function"""
+if __name__ == '__main__':
+    main()
+
