@@ -1,63 +1,91 @@
-# FSM to recognize decimal, octal, and hexadecimal integer literals
-class IntegerFSM:
-    def __init__(self):
-        self.current_state = 'start'
-        self.valid_states = {'integer', 'octal_integer', 'hexadecimal_integer'}
-        self.transitions = {
-            'start': {'digit': 'integer', '0': 'octal_prefix', '-': 'negative_sign'},
-            'negative_sign': {'digit': 'integer'},
-            'integer': {'digit': 'integer'},
-            'octal_prefix': {'digit': 'octal_integer', 'o': 'octal_integer', 'O': 'octal_integer'},
-            'octal_integer': {'digit': 'octal_integer'},
-            'hexadecimal_prefix': {'digit': 'hexadecimal_integer', 'a': 'hexadecimal_integer', 'A': 'hexadecimal_integer', 'b': 'hexadecimal_integer', 'B': 'hexadecimal_integer', 'c': 'hexadecimal_integer', 'C': 'hexadecimal_integer', 'd': 'hexadecimal_integer', 'D': 'hexadecimal_integer', 'e': 'hexadecimal_integer', 'E': 'hexadecimal_integer', 'f': 'hexadecimal_integer', 'F': 'hexadecimal_integer'},
-            'hexadecimal_integer': {'digit': 'hexadecimal_integer'}
-        }
+def parse_expression(input_str):
+    """Parses the input string and returns a tuple of two numbers and an operator."""
+    tokens = input_str.split()
+    if len(tokens) != 3:
+        return None
+    operand1 = parse_number(tokens[0])
+    operand2 = parse_number(tokens[2])
+    if operand1 is None or operand2 is None:
+        return None
+    if tokens[1] not in ['+', '-', '*', '/']:
+        return None
+    return operand1, operand2, tokens[1]
 
-    def process(self, input_string):
-        for char in input_string:
-            if char.isdigit():
-                self.current_state = self.transitions[self.current_state]['digit']
-            elif char == '0':
-                if self.current_state == 'start':
-                    self.current_state = 'octal_prefix'
-                elif self.current_state == 'hexadecimal_prefix':
-                    self.current_state = 'hexadecimal_integer'
-                else:
-                    self.current_state = 'invalid'
-            elif char == 'o' or char == 'O':
-                if self.current_state == 'octal_prefix':
-                    self.current_state = 'octal_integer'
-                else:
-                    self.current_state = 'invalid'
-            elif char == 'x' or char == 'X':
-                if self.current_state == 'start':
-                    self.current_state = 'hexadecimal_prefix'
-                else:
-                    self.current_state = 'invalid'
-            elif char == '-':
-                if self.current_state == 'start':
-                    self.current_state = 'negative_sign'
-                else:
-                    self.current_state = 'invalid'
-            else:
-                self.current_state = 'invalid'
-            
-            if self.current_state == 'invalid':
-                return False
-        
-        return self.current_state in self.valid_states
-
-
-# Main program
-while True:
-    input_string = input('Enter an integer: ')
-
-    if input_string == 'q':
-        break
-
-    fsm = IntegerFSM()
-
-    if fsm.process(input_string):
-        print(f'{input_string} is a valid integer')
+def parse_number(token):
+    """Parses a number from the input token."""
+    if token.startswith('0x') or token.startswith('0X'):
+        return parse_hex(token[2:])
+    elif token.startswith('0o') or token.startswith('0O'):
+        return parse_oct(token[2:])
     else:
-        print(f'{input_string} is not a valid integer')
+        return parse_dec(token)
+
+def parse_hex(token):
+    """Parses a hexadecimal integer from the input token."""
+    value = 0
+    for c in token:
+        if c.isdigit():
+            value = value * 16 + int(c)
+        elif c in ['a', 'A']:
+            value = value * 16 + 10
+        elif c in ['b', 'B']:
+            value = value * 16 + 11
+        elif c in ['c', 'C']:
+            value = value * 16 + 12
+        elif c in ['d', 'D']:
+            value = value * 16 + 13
+        elif c in ['e', 'E']:
+            value = value * 16 + 14
+        elif c in ['f', 'F']:
+            value = value * 16 + 15
+        else:
+            return None
+    return value
+
+def parse_oct(token):
+    """Parses an octal integer from the input token."""
+    value = 0
+    for c in token:
+        if c in ['0', '1', '2', '3', '4', '5', '6', '7']:
+            value = value * 8 + int(c)
+        else:
+            return None
+    return value
+
+def parse_dec(token):
+    """Parses a decimal integer from the input token."""
+    if not token.isdigit():
+        return None
+    return int(token)
+
+while True:
+    input_str = input('Enter an expression (e.g. 2 + 3): ').strip()
+
+    if len(input_str) > 20:
+        print('Input too long. Please enter an expression with at most 20 characters.')
+        continue
+
+    expr = parse_expression(input_str)
+    if expr is None:
+        print('Invalid input. Please enter a valid expression (e.g. 2 + 3).')
+        continue
+
+    operand1, operand2, operator = expr
+    if operator == '+':
+        result = operand1 + operand2
+    elif operator == '-':
+        result = operand1 - operand2
+    elif operator == '*':
+        result = operand1 * operand2
+    elif operator == '/':
+        if operand2 == 0:
+            print('Error: division by zero.')
+            continue
+        result = operand1 / operand2
+    else:
+        result = None
+
+    if result is not None:
+        print('Result:', result)
+    else:
+        print('Unknown operator.')
