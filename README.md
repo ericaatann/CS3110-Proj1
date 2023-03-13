@@ -4,7 +4,8 @@
 
 Group Members: 
 --------------
-Erica Tan 
+Erica Tan  
+
 Joseph Hoang 
 Jeffrey Ni
 
