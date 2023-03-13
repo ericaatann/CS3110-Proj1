@@ -7,17 +7,21 @@ Group Members:
 Erica Tan  
 
 Joseph Hoang 
+
 Jeffrey Ni
 
 Contributions:
 --------------
-Erica- main calculator code and helped with JFLAP
-Joseph- created whole nfa using JFLAP
+Erica- main calculator code and helped with JFLAP  
+
+Joseph- created whole nfa using JFLAP  
+
 Jeffrey- readme and helped with nfa design
 
 Githubs:
 --------
-ericaatann
+ericaatann  
+
 jefni03
 
 Features:
