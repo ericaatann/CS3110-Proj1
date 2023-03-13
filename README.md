@@ -22,6 +22,8 @@ Githubs:
 --------
 ericaatann  
 
+jhoang949
+
 jefni03
 
 Features:
