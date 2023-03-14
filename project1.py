@@ -1,5 +1,6 @@
 def parse_expression(input_str):
     """Parses the input string and returns a tuple of two numbers and an operator."""
+    input_str.replace("_", "")
     tokens = input_str.split()
     if len(tokens) != 3:
         return None
